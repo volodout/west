@@ -167,6 +167,34 @@ class Lad extends Dog {
     }
 }
 
+class Nemo extends Creature {
+    constructor(name = 'Немо', maxPower = 4) {
+        super(name, maxPower);
+        this.hasStolen = false; // Флаг, чтобы не воровать после первой кражи
+    }
+
+    doBeforeAttack(gameContext, continuation) {
+        const { oppositePlayer, position, updateView } = gameContext;
+        const targetCard = oppositePlayer.table[position];
+
+        if (targetCard && !this.hasStolen) {
+            const stolenPrototype = Object.getPrototypeOf(targetCard);
+            const currentPrototype = Object.getPrototypeOf(this);
+            Object.setPrototypeOf(this, stolenPrototype);
+            this.hasStolen = true;
+
+            if (typeof stolenPrototype.doBeforeAttack === 'function') {
+                stolenPrototype.doBeforeAttack.call(this, gameContext, () => {
+                    updateView();
+                    continuation();
+                });
+                return;
+            }
+        }
+        updateView();
+        continuation();
+    }
+}
 
 
 
@@ -176,8 +204,8 @@ const seriffStartDeck = [
     new Duck(),
 ];
 const banditStartDeck = [
-    new Lad(),
-    new Lad(),
+    new Nemo(),
+    new Nemo(),
 ];
 
 // Создание игры.
