@@ -5,45 +5,45 @@ import SpeedRate from './SpeedRate.js';
 
 // Отвечает является ли карта уткой.
 function isDuck(card) {
-    return card instanceof Duck;
+  return card instanceof Duck;
 }
 
 // Отвечает является ли карта собакой.
 function isDog(card) {
-    return card instanceof Dog;
+  return card instanceof Dog;
 }
 
 // Дает описание существа по схожести с утками и собаками
 function getCreatureDescription(card) {
-    if (isDuck(card) && isDog(card)) {
-        return 'Утка-Собака';
-    }
-    if (isDuck(card)) {
-        return 'Утка';
-    }
-    if (isDog(card)) {
-        return 'Собака';
-    }
-    return 'Существо';
+  if (isDuck(card) && isDog(card)) {
+    return 'Утка-Собака';
+  }
+  if (isDuck(card)) {
+    return 'Утка';
+  }
+  if (isDog(card)) {
+    return 'Собака';
+  }
+  return 'Существо';
 }
 
 class Creature extends Card {
-    constructor(name, maxPower, image) {
-        super(name, maxPower, image);
-    }
+  constructor(name, maxPower, image) {
+    super(name, maxPower, image);
+  }
 
-    getDescriptions() {
-        return [getCreatureDescription(this), ...super.getDescriptions()];
-    }
+  getDescriptions() {
+    return [getCreatureDescription(this), ...super.getDescriptions()];
+  }
 }
 
 // Основа для утки.
 class Duck extends Creature {
-    constructor(name='Мирная утка', maxPower=2, image) {
-        super(name, maxPower, image);
-        // this.quacks = function () { console.log('quack') };
-        // this.swims = function () { console.log('float: both;') };
-    }
+  constructor(name = 'Мирная утка', maxPower = 2, image) {
+    super(name, maxPower, image);
+    // this.quacks = function () { console.log('quack') };
+    // this.swims = function () { console.log('float: both;') };
+  }
 
   quacks() {
     console.log('quack');
@@ -57,22 +57,22 @@ class Duck extends Creature {
 
 // Основа для собаки.
 class Dog extends Creature {
-    constructor(name='Пес-бандит', maxPower=3, image) {
-        super(name, maxPower, image);
-    }
+  constructor(name = 'Пес-бандит', maxPower = 3, image) {
+    super(name, maxPower, image);
+  }
 }
 
 
 // Колода Шерифа, нижнего игрока.
 const seriffStartDeck = [
-    new Duck(),
-    new Duck(),
-    new Duck(),
+  new Duck(),
+  new Duck(),
+  new Duck(),
 ];
 
 // Колода Бандита, верхнего игрока.
 const banditStartDeck = [
-    new Dog(),
+  new Dog(),
 ];
 
 
@@ -84,5 +84,5 @@ SpeedRate.set(1);
 
 // Запуск игры.
 game.play(false, (winner) => {
-    alert('Победил ' + winner.name);
+  alert('Победил ' + winner.name);
 });
