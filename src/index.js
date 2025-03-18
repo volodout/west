@@ -5,12 +5,12 @@ import SpeedRate from './SpeedRate.js';
 
 // Отвечает является ли карта уткой.
 function isDuck(card) {
-    return card instanceof Duck;
+  return card && card.quacks && card.swims;
 }
 
 // Отвечает является ли карта собакой.
 function isDog(card) {
-    return card instanceof Dog;
+  return card instanceof Dog;
 }
 
 // Дает описание существа по схожести с утками и собаками
@@ -195,14 +195,22 @@ class Lad extends Dog {
   }
 }
 
+class PseudoDuck extends Dog {
+  constructor() {
+    super('Псевдоутка', 3);
+    this.quacks = function() { console.log('quack'); };
+    this.swims = function() { console.log('float: both;'); };
+  }
+}
+
 const seriffStartDeck = [
-    new Duck(),
-    new Duck(),
-    new Duck(),
+  new Duck(),
+  new Brewer(),
 ];
 const banditStartDeck = [
-    new Lad(),
-    new Lad(),
+  new Dog(),
+  new PseudoDuck(),
+  new Dog(),
 ];
 
 // Создание игры.
