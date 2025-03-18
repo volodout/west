@@ -5,26 +5,26 @@ import SpeedRate from './SpeedRate.js';
 
 // Отвечает является ли карта уткой.
 function isDuck(card) {
-  return card instanceof Duck;
+    return card instanceof Duck;
 }
 
 // Отвечает является ли карта собакой.
 function isDog(card) {
-  return card instanceof Dog;
+    return card instanceof Dog;
 }
 
 // Дает описание существа по схожести с утками и собаками
 function getCreatureDescription(card) {
-  if (isDuck(card) && isDog(card)) {
-    return 'Утка-Собака';
-  }
-  if (isDuck(card)) {
-    return 'Утка';
-  }
-  if (isDog(card)) {
-    return 'Собака';
-  }
-  return 'Существо';
+    if (isDuck(card) && isDog(card)) {
+        return 'Утка-Собака';
+    }
+    if (isDuck(card)) {
+        return 'Утка';
+    }
+    if (isDog(card)) {
+        return 'Собака';
+    }
+    return 'Существо';
 }
 
 class Creature extends Card {
@@ -45,13 +45,13 @@ class Duck extends Creature {
     // this.swims = function () { console.log('float: both;') };
   }
 
-  quacks() {
-    console.log('quack');
-  }
+    quacks() {
+        console.log('quack');
+    }
 
-  swims() {
-    console.log('float: both;');
-  }
+    swims() {
+        console.log('float: both;');
+    }
 }
 
 
@@ -63,18 +63,35 @@ class Dog extends Creature {
 }
 
 
-// Колода Шерифа, нижнего игрока.
+class Trasher extends Dog {
+    constructor(name = 'Громила', maxPower = 5) {
+        super(name, maxPower);
+    }
+
+    modifyTakenDamage(value, fromCard, gameContext, continuation) {
+        this.view.signalAbility(() => {
+            super.modifyTakenDamage(Math.max(0, value - 1), fromCard, gameContext, continuation);
+        });
+    }
+
+    getDescriptions() {
+        return [
+            'Получает на 1 меньше урона при атаке.',
+            ...super.getDescriptions()
+        ];
+    }
+}
+
+export default Trasher;
+
 const seriffStartDeck = [
-  new Duck(),
-  new Duck(),
-  new Duck(),
+    new Duck(),
+    new Duck(),
+    new Duck(),
 ];
-
-// Колода Бандита, верхнего игрока.
 const banditStartDeck = [
-  new Dog(),
+    new Dog(),
 ];
-
 
 // Создание игры.
 const game = new Game(seriffStartDeck, banditStartDeck);
@@ -84,5 +101,5 @@ SpeedRate.set(1);
 
 // Запуск игры.
 game.play(false, (winner) => {
-  alert('Победил ' + winner.name);
+    alert('Победил ' + winner.name);
 });
