@@ -39,8 +39,8 @@ class Creature extends Card {
 
 // Основа для утки.
 class Duck extends Creature {
-  constructor() {
-    super('Мирная утка', 2);
+  constructor(name='Мирная утка', maxPower=2) {
+    super(name, maxPower);
     // this.quacks = function () { console.log('quack') };
     // this.swims = function () { console.log('float: both;') };
   }
@@ -57,14 +57,14 @@ class Duck extends Creature {
 
 // Основа для собаки.
 class Dog extends Creature {
-  constructor() {
-    super('Пес-бандит', 3);
+  constructor(name='Пес-бандит', maxPower=3) {
+    super(name, maxPower);
   }
 }
 
 class Gatling extends Creature {
-  constructor() {
-    super('Гатлинг', 6);
+  constructor(name='Гатлинг', maxPower=6) {
+    super(name, maxPower);
   }
 
   attack(gameContext, continuation) {
@@ -84,8 +84,8 @@ class Gatling extends Creature {
 
 
 class Trasher extends Dog {
-    constructor(name = 'Громила', maxPower = 5) {
-        super(name, maxPower);
+    constructor() {
+        super('Громила', 5);
     }
 
     modifyTakenDamage(value, fromCard, gameContext, continuation) {
@@ -105,12 +105,15 @@ class Trasher extends Dog {
 export default Trasher;
 
 const seriffStartDeck = [
-    new Duck(),
-    new Duck(),
-    new Duck(),
+  new Duck(),
+  new Duck(),
+  new Duck(),
+  new Gatling(),
 ];
 const banditStartDeck = [
-    new Dog(),
+  new Trasher(),
+  new Dog(),
+  new Dog(),
 ];
 
 // Создание игры.
