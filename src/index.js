@@ -46,6 +46,7 @@ class Creature extends Card {
 }
 
 // Основа для утки.
+// Основа для утки.
 class Duck extends Creature {
   constructor(name='Мирная утка', maxPower=2) {
     super(name, maxPower);
@@ -69,6 +70,7 @@ class Dog extends Creature {
     super(name, maxPower);
   }
 }
+
 
 class Gatling extends Creature {
   constructor(name='Гатлинг', maxPower=6) {
@@ -195,6 +197,36 @@ class Lad extends Dog {
   }
 }
 
+class Nemo extends Creature {
+    constructor(name = 'Немо', maxPower = 4) {
+        super(name, maxPower);
+        this.hasStolen = false; // Флаг, чтобы не воровать после первой кражи
+    }
+
+    doBeforeAttack(gameContext, continuation) {
+        const { oppositePlayer, position, updateView } = gameContext;
+        const targetCard = oppositePlayer.table[position];
+
+        if (targetCard && !this.hasStolen) {
+            const stolenPrototype = Object.getPrototypeOf(targetCard);
+            const currentPrototype = Object.getPrototypeOf(this);
+            Object.setPrototypeOf(this, stolenPrototype);
+            this.hasStolen = true;
+
+            if (typeof stolenPrototype.doBeforeAttack === 'function') {
+                stolenPrototype.doBeforeAttack.call(this, gameContext, () => {
+                    updateView();
+                    continuation();
+                });
+                return;
+            }
+        }
+        updateView();
+        continuation();
+    }
+}
+
+
 class PseudoDuck extends Dog {
   constructor() {
     super('Псевдоутка', 3);
@@ -204,13 +236,13 @@ class PseudoDuck extends Dog {
 }
 
 const seriffStartDeck = [
-  new Duck(),
-  new Brewer(),
+    new Duck(),
+    new Duck(),
+    new Duck(),
 ];
 const banditStartDeck = [
-  new Dog(),
-  new PseudoDuck(),
-  new Dog(),
+    new Nemo(),
+    new Nemo(),
 ];
 
 // Создание игры.
