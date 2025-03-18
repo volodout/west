@@ -32,6 +32,14 @@ class Creature extends Card {
     super(name, maxPower, image);
   }
 
+  get currentPower() {
+    return this._currentPower;
+  }
+
+  set currentPower(value) {
+    return this._currentPower = value > this.maxPower ? this.maxPower : value;
+  }
+
   getDescriptions() {
     return [getCreatureDescription(this), ...super.getDescriptions()];
   }
@@ -102,16 +110,39 @@ class Trasher extends Dog {
     }
 }
 
-export default Trasher;
+// export default Trasher;
+
+class Brewer extends Duck {
+  constructor() {
+    super('Пивовар', 2);
+  }
+
+  attack(gameContext, continuation) {
+    const taskQueue = new TaskQueue();
+    taskQueue.push(onDone => this.view.showAttack(onDone));
+    const allCards = gameContext.currentPlayer.table.concat(gameContext.oppositePlayer.table);
+    allCards.forEach(card => {
+      if (isDuck(card)) {
+        taskQueue.push(onDone => {
+          card.maxPower += 1;
+          card.currentPower += 2;
+          card.updateView();
+          card.view.signalHeal(onDone);
+        });
+      }
+    });
+    taskQueue.continueWith(continuation);
+  }
+}
+
 
 const seriffStartDeck = [
   new Duck(),
-  new Duck(),
-  new Duck(),
-  new Gatling(),
+  new Brewer(),
 ];
 const banditStartDeck = [
-  new Trasher(),
+  new Dog(),
+  new Dog(),
   new Dog(),
   new Dog(),
 ];
