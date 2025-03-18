@@ -39,8 +39,8 @@ class Creature extends Card {
 
 // Основа для утки.
 class Duck extends Creature {
-  constructor(name = 'Мирная утка', maxPower = 2, image) {
-    super(name, maxPower, image);
+  constructor() {
+    super('Мирная утка', 2);
     // this.quacks = function () { console.log('quack') };
     // this.swims = function () { console.log('float: both;') };
   }
@@ -57,8 +57,28 @@ class Duck extends Creature {
 
 // Основа для собаки.
 class Dog extends Creature {
-  constructor(name = 'Пес-бандит', maxPower = 3, image) {
-    super(name, maxPower, image);
+  constructor() {
+    super('Пес-бандит', 3);
+  }
+}
+
+class Gatling extends Creature {
+  constructor() {
+    super('Гатлинг', 6);
+  }
+
+  attack(gameContext, continuation) {
+    const taskQueue = new TaskQueue();
+    taskQueue.push(onDone => this.view.showAttack(onDone));
+
+    const enemyCards = gameContext.oppositePlayer.table;
+    enemyCards.forEach(card => {
+      taskQueue.push(onDone => {
+        this.dealDamageToCreature(2, card, gameContext, onDone);
+      });
+    });
+
+    taskQueue.continueWith(continuation);
   }
 }
 
