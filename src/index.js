@@ -90,7 +90,6 @@ class Gatling extends Creature {
   }
 }
 
-
 class Trasher extends Dog {
     constructor() {
         super('Громила', 5);
@@ -109,8 +108,6 @@ class Trasher extends Dog {
         ];
     }
 }
-
-// export default Trasher;
 
 class Brewer extends Duck {
   constructor() {
@@ -135,16 +132,77 @@ class Brewer extends Duck {
   }
 }
 
+class Lad extends Dog {
+  constructor(name = 'Браток', maxPower = 2) {
+    super(name, maxPower);
+  }
+
+  static getInGameCount() {
+    return this.inGameCount || 0;
+  }
+
+  static setInGameCount(value) {
+    this.inGameCount = value;
+  }
+
+  static getBonus() {
+    const count = this.getInGameCount();
+    return (count * (count + 1)) / 2;
+  }
+
+  doAfterComingIntoPlay(gameContext, continuation) {
+    Lad.setInGameCount(Lad.getInGameCount() + 1);
+    continuation();
+  }
+
+  doBeforeRemoving(continuation) {
+    Lad.setInGameCount(Lad.getInGameCount() - 1);
+    if (continuation) {
+      continuation();
+    }
+  }
+
+  modifyDealedDamageToCreature(value, toCard, gameContext, continuation) {
+    this.view.signalAbility(() => {
+      super.modifyDealedDamageToCreature(value + Lad.getBonus(), toCard, gameContext, continuation);
+    });
+  }
+
+  modifyTakenDamage(value, fromCard, gameContext, continuation) {
+    this.view.signalAbility(() => {
+      const reducedDamage = Math.max(1, value - Lad.getBonus());
+      super.modifyTakenDamage(reducedDamage, fromCard, gameContext, () => {
+        if (this.currentPower <= 0) {
+          this.doBeforeRemoving(() => {
+            gameContext.currentPlayer.table = gameContext.currentPlayer.table.filter(card => card !== this);
+            if (continuation) {
+              continuation();
+            }
+          });
+        } else {
+          continuation();
+        }
+      });
+    });
+  }
+
+  getDescriptions() {
+    const descriptions = super.getDescriptions();
+    if (Lad.prototype.hasOwnProperty('modifyDealedDamageToCreature') || Lad.prototype.hasOwnProperty('modifyTakenDamage')) {
+      return ['Чем их больше, тем они сильнее.', ...descriptions];
+    }
+    return descriptions;
+  }
+}
 
 const seriffStartDeck = [
-  new Duck(),
-  new Brewer(),
+    new Duck(),
+    new Duck(),
+    new Duck(),
 ];
 const banditStartDeck = [
-  new Dog(),
-  new Dog(),
-  new Dog(),
-  new Dog(),
+    new Lad(),
+    new Lad(),
 ];
 
 // Создание игры.
