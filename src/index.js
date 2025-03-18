@@ -46,7 +46,6 @@ class Creature extends Card {
 }
 
 // Основа для утки.
-// Основа для утки.
 class Duck extends Creature {
   constructor(name='Мирная утка', maxPower=1) {
     super(name, maxPower);
@@ -147,10 +146,13 @@ class Lad extends Dog {
     this.inGameCount = value;
   }
 
-  static getBonus() {
-    const count = this.getInGameCount();
-    return (count * (count + 1)) / 2;
-  }
+    static getBonus() {
+        const count = this.getInGameCount();
+        if (count <= 1) {
+            return 0;
+        }
+        return (count * (count + 1)) / 2;
+    }
 
   doAfterComingIntoPlay(gameContext, continuation) {
     Lad.setInGameCount(Lad.getInGameCount() + 1);
@@ -195,6 +197,47 @@ class Lad extends Dog {
     }
     return descriptions;
   }
+}
+
+class Rogue extends Creature {
+    constructor(name = 'Изгой', maxPower = 2) {
+        super(name, maxPower);
+    }
+
+    beforeAttack(gameContext, continuation) {
+        const target = gameContext.oppositePlayer.table[gameContext.position];
+        if (target) {
+            const targetPrototype = Object.getPrototypeOf(target);
+
+            // Выбираем методы, которые надо украсть
+            const abilities = [
+                'modifyDealedDamageToCreature',
+                'modifyDealedDamageToPlayer',
+                'modifyTakenDamage'
+            ];
+
+            // Проверяем, что у цели есть эти методы и она не уже Изгой
+            if (targetPrototype !== Creature.prototype) {
+                abilities.forEach(ability => {
+                    if (targetPrototype.hasOwnProperty(ability)) {
+                        this[ability] = targetPrototype[ability];
+                        delete targetPrototype[ability];
+                    }
+                });
+            }
+
+            // Обновляем отображение
+            gameContext.updateView();
+        }
+        continuation();
+    }
+
+    getDescriptions() {
+        return [
+            'Перед атакой забирает у цели способности уменьшения получаемого или увеличения наносимого урона.',
+            ...super.getDescriptions()
+        ];
+    }
 }
 
 class Nemo extends Creature {
