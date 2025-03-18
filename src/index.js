@@ -27,17 +27,31 @@ function getCreatureDescription(card) {
     return 'Существо';
 }
 
+class Creature extends Card {
+    constructor(name, maxPower, image) {
+        super(name, maxPower, image);
+    }
 
+    getDescriptions() {
+        return [getCreatureDescription(this), ...super.getDescriptions()];
+    }
+}
 
 // Основа для утки.
-function Duck() {
-    this.quacks = function () { console.log('quack') };
-    this.swims = function () { console.log('float: both;') };
+class Duck extends Creature {
+    constructor(name, maxPower, image) {
+        super(name, maxPower, image);
+        this.quacks = function () { console.log('quack') };
+        this.swims = function () { console.log('float: both;') };
+    }
 }
 
 
 // Основа для собаки.
-function Dog() {
+class Dog extends Creature {
+    constructor(name, maxPower, image) {
+        super(name, maxPower, image);
+    }
 }
 
 
